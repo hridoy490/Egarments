@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garments Job Connect (Demo)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen text-gray-800">
+    <header class="bg-blue-600 text-white py-4 text-center text-xl font-bold shadow">
+      Garments Job Connect (Demo)
+    </header>
+
+    <main class="max-w-3xl mx-auto p-4">
+      <section id="home">
+        <h2 class="text-lg font-semibold mb-2">সমস্যা (Problem)</h2>
+        <p class="mb-4">
+          বাংলাদেশের গার্মেন্টস সেক্টরে প্রতি মাসের ১-১৫ তারিখে ৮০% কোম্পানি নতুন
+          কর্মী নিয়োগ দেয়। কিন্তু প্রতিটি ইন্টারভিউ নিতে প্রচুর সময় ও রিসোর্স লাগে।
+          কর্মীরাও ভোগান্তিতে পড়ে।
+        </p>
+
+        <h2 class="text-lg font-semibold mb-2">সমাধান (Solution)</h2>
+        <p class="mb-4">
+          “Garments Job Connect” একটি সহজ ও লোকেশন-ভিত্তিক জব প্ল্যাটফর্ম যেখানে
+          মালিক ও কর্মীরা এক জায়গায় যুক্ত হবে। আমাদের নিজস্ব ইনস্টিটিউট থেকে
+          ভেরিফায়েড প্রোফাইল পাবে।
+        </p>
+
+        <div class="flex gap-4 mt-6">
+          <button onclick="showSection('worker')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+            আমি কর্মী
+          </button>
+          <button onclick="showSection('owner')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+            আমি মালিক
+          </button>
+        </div>
+      </section>
+
+      <section id="worker" class="hidden">
+        <h2 class="text-xl font-bold mb-3">কর্মী রেজিস্ট্রেশন</h2>
+        <input id="workerName" placeholder="নাম" class="border p-2 rounded w-full mb-2" />
+        <input id="workerLocation" placeholder="লোকেশন" class="border p-2 rounded w-full mb-2" />
+        <select id="workerLevel" class="border p-2 rounded w-full mb-2">
+          <option value="junior">Junior</option>
+          <option value="mid">Mid</option>
+          <option value="senior">Senior</option>
+        </select>
+        <button onclick="addWorker()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+          Submit
+        </button>
+        <button onclick="showSection('home')" class="ml-2 text-gray-600 underline">
+          🔙 Back
+        </button>
+      </section>
+
+      <section id="owner" class="hidden">
+        <h2 class="text-xl font-bold mb-3">কর্মী খুঁজুন</h2>
+        <input id="searchQuery" placeholder="নাম / লোকেশন" class="border p-2 rounded w-full mb-3" />
+        <button onclick="searchWorker()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg mb-4">
+          Search
+        </button>
+        <div id="workerList"></div>
+        <button onclick="showSection('home')" class="mt-4 text-gray-600 underline">
+          🔙 Back
+        </button>
+      </section>
+    </main>
+
+    <script>
+      const workers = JSON.parse(localStorage.getItem("workers") || "[]");
+
+      function showSection(id) {
+        document.querySelectorAll("section").forEach((s) => s.classList.add("hidden"));
+        document.getElementById(id).classList.remove("hidden");
+      }
+
+      function addWorker() {
+        const name = document.getElementById("workerName").value.trim();
+        const location = document.getElementById("workerLocation").value.trim();
+        const level = document.getElementById("workerLevel").value;
+
+        if (!name || !location) {
+          alert("সব তথ্য পূরণ করুন!");
+          return;
+        }
+
+        const newWorker = { id: Date.now(), name, location, level };
+        workers.push(newWorker);
+        localStorage.setItem("workers", JSON.stringify(workers));
+        alert("রেজিস্ট্রেশন সম্পন্ন ✅");
+        document.getElementById("workerName").value = "";
+        document.getElementById("workerLocation").value = "";
+        showSection("home");
+      }
+
+      function searchWorker() {
+        const query = document.getElementById("searchQuery").value.toLowerCase();
+        const list = document.getElementById("workerList");
+        list.innerHTML = "";
+
+        const results = workers.filter(
+          (w) =>
+            w.name.toLowerCase().includes(query) ||
+            w.location.toLowerCase().includes(query)
+        );
+
+        if (results.length === 0) {
+          list.innerHTML = "<p class='text-gray-500'>কোনো কর্মী পাওয়া যায়নি 😢</p>";
+          return;
+        }
+
+        results.forEach((w) => {
+          const div = document.createElement("div");
+          div.className = "border p-3 rounded-lg mb-2 bg-white shadow-sm";
+          div.innerHTML = `
+            <p><strong>নাম:</strong> ${w.name}</p>
+            <p><strong>লোকেশন:</strong> ${w.location}</p>
+            <p><strong>লেভেল:</strong> ${w.level}</p>
+          `;
+          list.appendChild(div);
+        });
+      }
+    </script>
+  </body>
+</html>
